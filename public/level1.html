@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUGGIT | LEVEL 1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #050505;
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* CRT Screen Effect */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            border: 2px solid #00ff00;
+            padding: 40px;
+            max-width: 1000px;
+            width: 95%;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Two-column Layout */
+        .layout-grid {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            height: 450px;
+        }
+
+        .left-panel {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-panel {
+            flex: 0.8;
+            border: 2px solid #005500;
+            background: rgba(0, 20, 0, 0.5);
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+            /* Keep newest logs at bottom effectively */
+            font-size: 0.85rem;
+        }
+
+        .story-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #00dd00;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        /* Terminal Input Styling */
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(0, 255, 0, 0.05);
+            padding: 10px;
+            border-left: 3px solid #00ff00;
+        }
+
+        .prompt {
+            margin-right: 15px;
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            width: 100%;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(0, 255, 0, 0.3);
+        }
+
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: #00cc00;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        /* Output Logs */
+        .log-entry {
+            margin-top: 5px;
+            word-break: break-word;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+        }
+
+        .error {
+            color: #ff3333;
+        }
+
+        .success {
+            color: #ffff00;
+        }
+
+        .system {
+            color: #008800;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .layout-grid {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .right-panel {
+                height: 200px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="crt">
+    <div class="container">
+        <h1>MMMUT SERVER // GATEWAY_01</h1>
+
+        <div class="layout-grid">
+            <div class="left-panel">
+                <div class="story-text">
+                    > CONNECTION ESTABLISHED...<br>
+                    > WELCOME TO THE MMMUT CENTRAL MAINFRAME.<br>
+                    > WARNING: UNAUTHORIZED PERSONNEL DETECTED.<br>
+                    <br>
+                    The System Administrator is an AI that refuses to speak human languages.
+                    It only responds to <strong>STRUCTURED QUERY LOGIC</strong>.
+                </div>
+
+                <form id="consoleForm">
+                    <!-- STEP 1: SQL INJECTION -->
+                    <div id="step1-container">
+                        <div class="input-line">
+                            <span class="prompt">USER@MMMUT:~$</span>
+                            <input type="text" id="input1" placeholder="Enter query..." autocomplete="off" autofocus>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: PASSPHRASE -->
+                    <div id="step2-container" class="hidden">
+                        <div class="system">> SQL LOGIC ACCEPTED.</div>
+                        <div class="system">> SECONDARY PROTOCOL ENGAGED.</div>
+                        <br>
+                        <div class="story-text" style="font-size: 0.9rem;">
+                            > CHALLENGE: ONE CLUB RULES THEM ALL.<br>
+                            > INPUT THE SECRET IDENTIFIER.
+                        </div>
+                        <div class="input-line">
+                            <span class="prompt">ROOT@MMMUT:~$</span>
+                            <input type="text" id="input2" placeholder="Passphrase..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="cmdBtn">EXECUTE_COMMAND</button>
+                </form>
+            </div>
+
+            <div class="right-panel" id="output">
+                <div class="log-entry system">> WAITING FOR INPUT...</div>
+                <div class="log-entry system">> SYSTEM READY.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 1;
+        const outputDiv = document.getElementById('output');
+
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = 'log-entry ' + type;
+            div.textContent = '> ' + msg;
+
+            // In a column-reverse container, we append to make it appear at the "bottom" (visual top) 
+            // OR prepend to make it appear at the "top" (visual bottom).
+            // Actually with column-reverse, the first child is at the bottom.
+            // So if we want new messages at the bottom, we should prepend them?
+            // Let's stick to standard flex-direction column and scroll to bottom.
+
+            // Reverting logic for standard scroll
+            outputDiv.appendChild(div);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        document.getElementById('consoleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const input1 = document.getElementById('input1');
+            const input2 = document.getElementById('input2');
+
+            // Visual feedback
+            const activeInput = currentLevel === 1 ? input1.value : input2.value;
+            log(`EXECUTING: "${activeInput}"...`);
+
+            const payload = currentLevel === 1
+                ? { username: input1.value, step: "1" }
+                : { password: input2.value, step: "2" };
+
+            try {
+                const res = await fetch('/api/level1/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    log(data.message, 'success');
+
+                    if (data.nextStep === 2) {
+                        currentLevel = 2;
+                        document.getElementById('step1-container').classList.add('hidden');
+                        document.getElementById('step2-container').classList.remove('hidden');
+                        input2.focus();
+                        log("ACCESS LEVEL 1 GRANTED. PROCEED.", "system");
+                    }
+
+                    if (data.bounty) {
+                        console.log("BOUNTY ACQUIRED: " + data.bounty);
+                        log(">> BOUNTY ACQUIRED: " + data.bounty, "success");
+                    }
+
+                    if (data.rewardPath) {
+                        log("SYSTEM BREACHED.", "success");
+                        log("REDIRECTING...", "success");
+                        setTimeout(() => {
+                            window.location.href = data.rewardPath;
+                        }, 1500);
+                        document.getElementById('cmdBtn').disabled = true;
+                    }
+
+                } else {
+                    log(data.message, 'error');
+                    log("ACCESS DENIED.", 'error');
+
+                    // Shake effect
+                    document.querySelector('.container').style.transform = 'translateX(5px)';
+                    setTimeout(() => document.querySelector('.container').style.transform = 'translateX(0)', 100);
+                }
+
+            } catch (err) {
+                log("FATAL ERROR: CONNECTION LOST", 'error');
+            }
+        });
+
+        // Fix for scrolling behavior override
+        const rightPanel = document.querySelector('.right-panel');
+        rightPanel.style.flexDirection = 'column';
+    </script>
+</body>
+
+</html>

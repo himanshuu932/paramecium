@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUGGIT | LEVEL 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #050510;
+            color: #00d4ff;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* CRT Effect (Cyan Tint) */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            border: 2px solid #00d4ff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 20, 40, 0.8);
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 2px solid #00d4ff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .title {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-badge {
+            background: #00d4ff;
+            color: #000;
+            padding: 5px 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .status-badge.locked {
+            background: #ff3333;
+            color: #000;
+        }
+
+        /* Main Content Grid */
+        .grid {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Left Panel: File Browser */
+        .left-panel {
+            flex: 1;
+            border-right: 1px solid #005577;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dir-header {
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #005577;
+            color: #5599aa;
+        }
+
+        .file-list {
+            list-style: none;
+            font-size: 1.1rem;
+        }
+
+        .file-item {
+            padding: 8px 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid transparent;
+        }
+
+        .file-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .file-icon {
+            margin-right: 10px;
+        }
+
+        .file-perm {
+            font-size: 0.8rem;
+            color: #5599aa;
+        }
+
+        /* Right Panel: Command Interface */
+        .right-panel {
+            flex: 0.8;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .terminal-window {
+            flex: 1;
+            border: 1px solid #005577;
+            padding: 15px;
+            font-size: 0.9rem;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background: #000510;
+        }
+
+        .log {
+            margin-bottom: 5px;
+        }
+
+        .log.error {
+            color: #ff3333;
+        }
+
+        .log.success {
+            color: #00ff00;
+        }
+
+        .log.info {
+            color: #00d4ff;
+        }
+
+        /* Command Input */
+        .cmd-line {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px;
+            border: 1px solid #00d4ff;
+        }
+
+        .prompt {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            background: transparent;
+            border: none;
+            color: #00d4ff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            width: 100%;
+            outline: none;
+        }
+
+        /* Success Overlay */
+        .success-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            display: none;
+        }
+
+        .success-msg {
+            font-size: 2rem;
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .next-btn {
+            padding: 15px 40px;
+            background: #00ff00;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border: 2px solid #00ff00;
+            text-transform: uppercase;
+        }
+
+        .next-btn:hover {
+            background: #000;
+            color: #00ff00;
+        }
+
+        @media(max-width: 768px) {
+            .grid {
+                flex-direction: column;
+            }
+
+            .left-panel {
+                border-right: none;
+                border-bottom: 1px solid #005577;
+            }
+        }
+    </style>
+</head>
+
+<body class="crt">
+    <div class="container">
+        <div class="header">
+            <div class="title">SECURE_FS // V2.0</div>
+            <div class="status-badge locked" id="statusBadge">LOCK: ACTIVE</div>
+        </div>
+
+        <div class="grid">
+            <!-- File System Visualizer -->
+            <div class="left-panel">
+                <div class="dir-header">Current Directory: /uploads/sandbox</div>
+                <ul class="file-list">
+                    <li class="file-item">
+                        <span><span class="file-icon">📄</span>readme.nfo</span>
+                        <span class="file-perm">r--</span>
+                    </li>
+                    <li class="file-item">
+                        <span><span class="file-icon">🔒</span>lock.txt <span
+                                style="color:#ff3333;">(DECOY)</span></span>
+                        <span class="file-perm">rw-</span>
+                    </li>
+                    <li class="file-item">
+                        <span><span class="file-icon">📁</span>trash/</span>
+                        <span class="file-perm">rwx</span>
+                    </li>
+                    <li class="file-item" style="color: #444;">
+                        <span><span class="file-icon">?</span>.hidden</span>
+                        <span class="file-perm">---</span>
+                    </li>
+                </ul>
+
+                <div
+                    style="margin-top:auto; font-size: 0.8rem; color: #5599aa; border-top: 1px solid #005577; padding-top: 15px;">
+                    SYSTEM NOTE: The 'sandbox' directory is isolated.
+                    <br>Standard deletion commands cannot affect parent directories.
+                </div>
+            </div>
+
+            <!-- Terminal -->
+            <div class="right-panel">
+                <div class="terminal-window" id="terminal">
+                    <div class="log info">> MOUNTED: /uploads/sandbox</div>
+                    <div class="log info">> SCANNING FOR LOCK_FILES...</div>
+                    <div class="log error">> ALERT: SYSTEM LOCKED.</div>
+                    <div class="log info">> WAITING FOR REMOVAL COMMAND...</div>
+                </div>
+
+                <form id="cmdForm">
+                    <div class="cmd-line">
+                        <span class="prompt">admin@fs:~/sandbox$</span>
+                        <input type="text" id="filename" placeholder="rm <filename>" autocomplete="off" autofocus>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="success-overlay" id="successOverlay">
+            <div class="success-msg">SYSTEM UNLOCKED</div>
+            <a href="#" class="next-btn" id="nextLink">ACCESS LEVEL 3</a>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const statusBadge = document.getElementById('statusBadge');
+        const sessionToken = window.location.pathname.replace('/', '');
+
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'log ' + type;
+            div.textContent = '> ' + msg;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        document.getElementById('cmdForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('filename');
+            let val = input.value.trim();
+
+            // Simulate "rm" command behavior if user types "rm file"
+            if (val.startsWith('rm ')) {
+                val = val.substring(3).trim();
+            }
+
+            log(`EXECUTING: rm ${val}`);
+
+            try {
+                const res = await fetch('/api/level2/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filename: val, accessToken: sessionToken })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    log("SUCCESS: " + data.message, "success");
+
+                    if (data.bounty && data.rewardPath) {
+                        log(">> BOUNTY UNLOCKED: " + data.bounty, "success");
+                        statusBadge.className = 'status-badge';
+                        statusBadge.style.background = '#00ff00';
+                        statusBadge.textContent = 'LOCK: REMOVED';
+                        setTimeout(() => {
+                            document.getElementById('successOverlay').style.display = 'flex';
+                            document.getElementById('nextLink').href = data.rewardPath;
+                        }, 1000);
+                    } else {
+                        // Fake success / Decoy
+                        log(data.message, 'error'); // Decoys return success:true but should be treated as warn/error in UI context
+                        log("WARNING: DECOY TARGET ELIMINATED. LOCK REMAINS.", 'error');
+                    }
+                } else {
+                    log("ERROR: " + data.message, 'error');
+                }
+            } catch (err) {
+                log("FATAL: CONNECTION FAILURE", 'error');
+            }
+
+            input.value = '';
+        });
+    </script>
+</body>
+
+</html>

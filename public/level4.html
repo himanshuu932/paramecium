@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PARAMECIUM'S OUTBREAK</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #030803;
+            color: #00ff00;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CRT Effect */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            border: 2px solid #00ff00;
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            display: flex;
+            background: rgba(0, 20, 0, 0.95);
+            box-shadow: 0 0 20px #005500;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Left Column: Console */
+        .col-left {
+            flex: 0.4;
+            border-right: 2px solid #00ff00;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: rgba(0, 10, 0, 0.5);
+        }
+
+        .console-header {
+            border-bottom: 1px dashed #00ff00;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            font-size: 1.2rem;
+            color: #00aa00;
+        }
+
+        .console-log {
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #00ff00;
+            text-align: left;
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+        }
+
+        .log-warn {
+            color: #ffff00;
+        }
+
+        .log-err {
+            color: #ff0000;
+        }
+
+        /* Right Column: Controls & Story */
+        .col-right {
+            flex: 0.6;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            /* Changed to start */
+            text-align: center;
+            overflow-y: auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-spin {
+            animation: spin 10s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .story-box {
+            background: rgba(0, 30, 0, 0.6);
+            border: 1px dashed #00aa00;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: left;
+            width: 100%;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #00ee00;
+        }
+
+        .status-area {
+            width: 100%;
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: rgba(0, 50, 0, 0.2);
+        }
+
+        .status-text {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .meter-container {
+            width: 100%;
+            height: 40px;
+            background: #002200;
+            border: 1px solid #00ff00;
+            position: relative;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: #00ff00;
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 15px #00ff00;
+        }
+
+        .btn-panic {
+            margin-top: 30px;
+            background: #ff0000;
+            color: #fff;
+            border: 3px solid #550000;
+            padding: 20px 40px;
+            font-family: inherit;
+            font-size: 1.8rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 0 20px #ff0000;
+            animation: pulse-btn 2s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .btn-panic:active {
+            transform: scale(0.95);
+        }
+
+        .btn-panic:disabled {
+            background: #333;
+            color: #666;
+            border-color: #444;
+            animation: none;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Success Overlay */
+        #flagResult {
+            margin-top: 20px;
+            color: #ffff00;
+            font-size: 1.5rem;
+            border: 2px dashed #ffff00;
+            padding: 15px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="crt">
+    <div class="container">
+        <!-- LEFT: Real-time System Logs -->
+        <div class="col-left">
+            <div class="console-header">>> SYSTEM_KERNEL_LOG</div>
+            <div class="console-log" id="consoleLog">
+                <div class="log-line">> [INIT] KERNEL LOADED.</div>
+                <div class="log-line">> [CHECK] CONTAINMENT INTEGRITY: 100%</div>
+                <div class="log-line">> [WARN] ANOMALOUS GROWTH DETECTED.</div>
+                <div class="log-line">> [SYS] AWAITING COMMAND...</div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Interactive Control -->
+        <div class="col-right">
+            <h1>
+                <span class="icon-spin">☢️</span>
+                PARAMECIUM'S OUTBREAK
+                <span class="icon-spin">☢️</span>
+            </h1>
+
+            <div class="story-box">
+                <p><strong>> INCIDENT REPORT: #992-DELTA</strong></p>
+                <p>> SUBJECT: "PARAMECIUM" (Digital Pathogen)</p>
+                <p>> STATUS: Rapid Replication. Quarantine failing.</p>
+                <p>------------------------------------------------</p>
+                <p>> ANALYSIS: The organism has evolved to ignore standard termination protocols. Single-point
+                    interventions are ineffective.</p>
+                <p>> HYPOTHESIS: Only a confirmed <strong>LIMIT BREAK</strong> event—originating from a verified
+                    Administrator Source—can override its defensive adaptation.</p>
+                <p>> REQUIRED ASSET: Master Authorization Key (Unique ID). Without it, the system will reject
+                    high-frequency inputs.</p>
+            </div>
+
+            <div class="status-area">
+                <div class="status-text">INFECTION LEVEL: <span id="levelDisplay">0</span>%</div>
+                <div class="meter-container">
+                    <div class="meter-fill" id="meter"></div>
+                </div>
+            </div>
+
+            <button class="btn-panic" id="spreadBtn">SPREAD INFECTION</button>
+            <div id="flagResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const token = window.location.pathname.replace('/', '');
+        const meter = document.getElementById('meter');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const consoleLog = document.getElementById('consoleLog');
+        const btn = document.getElementById('spreadBtn');
+        let currentLevel = 0;
+
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = 'log-line ' + type;
+            // Timestamp
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+            div.textContent = `> [${time}] ${msg}`;
+            consoleLog.insertBefore(div, consoleLog.firstChild);
+        }
+
+        // Poll for REAL status
+        fetch('/api/level4/status')
+            .then(r => r.json())
+            .then(data => {
+                if (data.completed) {
+                    currentLevel = 100;
+                    updateUI(100);
+                    log("CRITICAL OVERLOAD CONFIRMED.", "log-err");
+                    document.getElementById('flagResult').textContent = data.bounty;
+                    document.getElementById('flagResult').style.display = 'block';
+                    btn.disabled = true;
+                    btn.textContent = "BREACHED";
+                }
+            });
+
+        function updateUI(level) {
+            levelDisplay.textContent = level;
+            meter.style.width = level + '%';
+            if (level > 80) {
+                meter.style.background = '#ff0000';
+                meter.style.boxShadow = '0 0 20px #ff0000';
+            }
+        }
+
+        btn.addEventListener('click', async () => {
+            log("INITIATING STANDARD SPREAD...", "log-warn");
+
+            try {
+                const res = await fetch('/api/level4/spreadParamecium', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const data = await res.json();
+
+                if (data.success === false) {
+                    log("REJECTED: " + data.message, "log-err");
+                    // Glitch effect
+                    currentLevel = Math.floor(Math.random() * 15);
+                    updateUI(currentLevel);
+                }
+            } catch (err) {
+                log("CONNECTION_ERR", "log-err");
+            }
+        });
+    </script>
+</body>
+
+</html>

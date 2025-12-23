@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUGGIT | LEVEL 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0d021c;
+            color: #d400ff;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* CRT Effect (Purple Tint) */
+        .crt::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            border: 2px solid #d400ff;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 25px rgba(212, 0, 255, 0.2);
+            position: relative;
+            z-index: 1;
+            background: rgba(20, 0, 40, 0.85);
+        }
+
+        /* Header */
+        .header {
+            border-bottom: 2px solid #d400ff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(212, 0, 255, 0.1);
+        }
+
+        .title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px #d400ff;
+        }
+
+        .user-id {
+            background: #d400ff;
+            color: #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Left: Your Wallet */
+        .wallet-panel {
+            flex: 0.4;
+            border: 1px solid #7a0094;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .panel-label {
+            color: #ff99ff;
+            border-bottom: 1px dashed #7a0094;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .balance-giant {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #fff;
+            text-shadow: 0 0 15px #d400ff;
+        }
+
+        .balance-sub {
+            text-align: center;
+            color: #7a0094;
+            margin-bottom: auto;
+        }
+
+        .action-area {
+            margin-top: 20px;
+            border-top: 1px dashed #7a0094;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .btn-main {
+            width: 100%;
+            background: #d400ff;
+            color: #000;
+            border: none;
+            padding: 15px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-main:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            border: 1px solid #444;
+        }
+
+        .btn-main:not(:disabled):hover {
+            box-shadow: 0 0 20px #d400ff;
+        }
+
+        /* Right: The Ledger (Targets) */
+        .ledger-panel {
+            flex: 0.6;
+            border: 1px solid #7a0094;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ledger-table th {
+            text-align: left;
+            color: #ff99ff;
+            padding: 10px;
+            border-bottom: 1px solid #d400ff;
+        }
+
+        .ledger-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #330044;
+            color: #e0e0e0;
+        }
+
+        .ledger-row:hover {
+            background: rgba(212, 0, 255, 0.1);
+        }
+
+        .target-id {
+            color: #d400ff;
+        }
+
+        .target-amt {
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .btn-refresh {
+            background: transparent;
+            border: 1px solid #7a0094;
+            color: #ff99ff;
+            padding: 5px 15px;
+            cursor: pointer;
+            margin-left: auto;
+            font-family: inherit;
+        }
+
+        .btn-refresh:hover {
+            background: #7a0094;
+            color: #fff;
+        }
+
+        /* Console Output (Mini) */
+        .mini-console {
+            margin-top: 20px;
+            height: 100px;
+            background: #000;
+            border: 1px solid #330044;
+            padding: 10px;
+            font-size: 0.8rem;
+            overflow-y: auto;
+            color: #aaa;
+        }
+
+        .log-success {
+            color: #00ff00;
+        }
+
+        .log-err {
+            color: #ff3333;
+        }
+
+        .log-sys {
+            color: #d400ff;
+        }
+
+        /* Overlay */
+        .success-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 2, 28, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            display: none;
+        }
+
+        .flag-box {
+            border: 2px solid #00ff00;
+            padding: 30px;
+            text-align: center;
+            color: #00ff00;
+            background: rgba(0, 20, 0, 0.8);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        .next-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #000;
+            background: #00ff00;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media(max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            .balance-giant {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="crt">
+    <div class="container">
+        <div class="header">
+            <div class="title">SHADOW_BANK // VAULT</div>
+            <div class="user-id">ID: #0005</div>
+        </div>
+
+        <div class="dashboard">
+            <!-- Left: Your Info */ -->
+            <div class="wallet-panel">
+                <div class="panel-label">YOUR LIQUIDITY</div>
+                <div class="balance-giant" id="yourCredits">0</div>
+                <div class="balance-sub">COINS AVAILABLE</div>
+
+                <div class="action-area">
+                    <p style="margin-bottom: 10px; font-size: 0.8rem; color: #aaa;">
+                        COST OF ENTRY: 25 COINS
+                    </p>
+                    <button class="btn-main" id="finalBtn" disabled>PURCHASE ACCESS KEY</button>
+                    <div style="margin-top: 15px; font-size: 0.75rem; color: #ff3333;">
+                        WARNING: Wealth redistribution protocols inactive. <br>
+                        (Hint: Use PATCH to redistribute)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: The Database -->
+            <div class="ledger-panel">
+                <div style="display:flex; align-items:center; margin-bottom: 15px;">
+                    <div class="panel-label" style="margin:0; border:none;">TARGET ACCOUNTS</div>
+                    <button class="btn-refresh" onclick="refreshData()">[REFRESH_DB]</button>
+                </div>
+
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>ENTITY</th>
+                            <th>ROLE</th>
+                            <th style="text-align:right">HOLDINGS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="accountList">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+
+                <div class="mini-console" id="console">
+                    <div class="log-sys">> CONNECTED TO SHADOW_NET...</div>
+                    <div class="log-sys">> FETCHING ACCOUNT DATA...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="success-overlay" id="overlay">
+            <div class="flag-box">
+                <h1 style="margin-bottom:10px;">ACCESS GRANTED</h1>
+                <div id="finalFlag" style="font-family:monospace; margin-bottom:15px;"></div>
+                <a href="#" class="next-link" id="level4Link">ENTER LEVEL 4</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sessionToken = window.location.pathname.replace('/', '');
+        const consoleDiv = document.getElementById('console');
+
+        function log(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = '> ' + msg;
+            consoleDiv.appendChild(div);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        async function loadBalance(id) {
+            try {
+                const res = await fetch(`/api/level3/user/${id}?token=${sessionToken}`);
+                const data = await res.json();
+                return data.success ? data.user.hintCoins : 'ERR';
+            } catch { return 'ERR'; }
+        }
+
+        async function refreshData() {
+            log("SYNCING LEDGER...", "log-sys");
+            const tbody = document.getElementById('accountList');
+            tbody.innerHTML = '';
+
+            let yourCredits = 0;
+            const roles = ['ADMIN', 'MOD', 'USER', 'USER', 'YOU'];
+
+            for (let i = 1; i <= 5; i++) {
+                const balance = await loadBalance(i);
+                if (i === 5) yourCredits = typeof balance === 'number' ? balance : 0;
+
+                const row = document.createElement('tr');
+                row.className = 'ledger-row';
+                row.innerHTML = `
+                    <td class="target-id">#000${i}</td>
+                    <td>${roles[i - 1]}</td>
+                    <td class="target-amt">${balance}</td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            document.getElementById('yourCredits').textContent = yourCredits;
+            log(`SYNC COMPLETE. YOUR BALANCE: ${yourCredits}`, "log-sys");
+
+            const btn = document.getElementById('finalBtn');
+            if (yourCredits >= 25) {
+                btn.disabled = false;
+                btn.style.boxShadow = "0 0 30px #d400ff";
+                log("SUFFICIENT FUNDS ACQUIRED.", "log-success");
+            } else {
+                btn.disabled = true;
+                btn.style.boxShadow = "none";
+            }
+        }
+
+        document.getElementById('finalBtn').addEventListener('click', async () => {
+            try {
+                log("INITIATING TRANSACTION...", "log-sys");
+                const res = await fetch('/api/level3/getbounty', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: sessionToken })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    log("TRANSACTION APPROVED.", "log-success");
+                    document.getElementById('finalFlag').textContent = data.bounty; // Show Bounty
+                    document.getElementById('finalFlag').style.color = '#00ff00';
+
+                    if (data.rewardPath) {
+                        document.getElementById('level4Link').href = data.rewardPath;
+                    }
+                    setTimeout(() => {
+                        document.getElementById('overlay').style.display = 'flex';
+                    }, 1000);
+                } else {
+                    log("TRANSACTION REJECTED: " + data.message, "log-err");
+                }
+            } catch { log("NETWORK ERROR", "log-err"); }
+        });
+
+        // Init
+        refreshData();
+    </script>
+</body>
+
+</html>

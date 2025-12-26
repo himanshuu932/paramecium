@@ -341,6 +341,19 @@
     </div>
 
     <script>
+        // Teamcode handling - extract from URL, store in localStorage, clean URL
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const teamcode = params.get("teamcode");
+            if (teamcode) {
+                localStorage.setItem("teamcode", teamcode);
+                params.delete("teamcode");
+                const cleanURL = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+                window.history.replaceState({}, document.title, cleanURL);
+                console.log("Teamcode saved:", teamcode);
+            }
+        });
+
         const sessionToken = window.location.pathname.replace('/', '');
         const consoleDiv = document.getElementById('console');
 
@@ -399,10 +412,11 @@
         document.getElementById('finalBtn').addEventListener('click', async () => {
             try {
                 log("INITIATING TRANSACTION...", "log-sys");
+                const teamcode = localStorage.getItem('teamcode') || '382045158047';
                 const res = await fetch('/api/level3/getbounty', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: sessionToken })
+                    body: JSON.stringify({ token: sessionToken, teamcode: teamcode })
                 });
                 const data = await res.json();
 

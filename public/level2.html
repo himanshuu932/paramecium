@@ -385,6 +385,19 @@
     </style>
 
     <script>
+        // Teamcode handling - extract from URL, store in localStorage, clean URL
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const teamcode = params.get("teamcode");
+            if (teamcode) {
+                localStorage.setItem("teamcode", teamcode);
+                params.delete("teamcode");
+                const cleanURL = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+                window.history.replaceState({}, document.title, cleanURL);
+                console.log("Teamcode saved:", teamcode);
+            }
+        });
+
         const terminal = document.getElementById('terminal');
         const statusBadge = document.getElementById('statusBadge');
         const sessionToken = window.location.pathname.replace('/', '');

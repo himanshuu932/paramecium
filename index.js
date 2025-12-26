@@ -6,6 +6,26 @@ const cookieParser = require("cookie-parser");
 const crypto = require("crypto");
 require("dotenv").config();
 
+// Backend-to-backend sync configuration
+const QUESTION_ID = process.env.QUESTION_ID || 'default_question_id';
+const MAIN_BACKEND_URL = 'https://buggit-backend-yy8i.onrender.com/api/store-result';
+
+async function sendToMainBackend(teamcode, questionId) {
+    try {
+        const response = await fetch(MAIN_BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ teamcode, questionId })
+        });
+        const result = await response.json();
+        console.log("[BACKEND-SYNC] Stored:", result);
+        return { success: true, result };
+    } catch (error) {
+        console.error("[BACKEND-SYNC] Error:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -249,6 +269,11 @@ app.post("/api/level3/getbounty", async (req, res) => {
     await player.save();
 
     req.gameState.level3Completed = true;
+
+    // Backend-to-backend sync: send result to main backend
+    const teamcode = req.body.teamcode || '382045158047';
+    const syncResult = await sendToMainBackend(teamcode, QUESTION_ID);
+    console.log("Sync result:", syncResult);
 
     res.json({
         success: true,

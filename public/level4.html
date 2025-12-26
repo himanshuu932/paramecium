@@ -357,6 +357,13 @@
 
                     btn.disabled = true;
                     btn.textContent = "BREACHED";
+
+                    if (data.redirect) {
+                        log("REDIRECTING TO DASHBOARD IN 4s...", "log-warn");
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 4000);
+                    }
                 }
             });
 

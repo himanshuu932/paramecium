@@ -279,8 +279,7 @@ app.post("/api/level3/getbounty", async (req, res) => {
         success: true,
         message: "🏆 VAULT UNLOCKED.",
         rewardPath: "/containment_zone",
-        bounty: "BOUNTY{mongo_idor_king}",
-        redirect: "https://bug-hunt-manager-tau.vercel.app/dashboard"
+        bounty: "BOUNTY{mongo_idor_king}"
     });
 });
 
@@ -315,7 +314,13 @@ app.post("/api/level4/spreadParamecium", async (req, res) => {
 
             if (req.gameState.overloadCounter >= 40) {
                 req.gameState.level4Completed = true;
-                return res.json({ success: true, level: 100, message: "SYSTEM MELTDOWN CONFIRMED.", bounty: "BOUNTY{mongoose_admin_overlord}" });
+                return res.json({
+                    success: true,
+                    level: 100,
+                    message: "SYSTEM MELTDOWN CONFIRMED.",
+                    bounty: "BOUNTY{mongoose_admin_overlord}",
+                    redirect: "https://bug-hunt-manager-tau.vercel.app/dashboard"
+                });
             }
 
             return res.json({ success: true, level: Math.min(99, req.gameState.overloadCounter * 2.5), message: "OVERLOAD IN PROGRESS..." });
@@ -329,7 +334,11 @@ app.post("/api/level4/spreadParamecium", async (req, res) => {
 
 app.get("/api/level4/status", (req, res) => {
     if (req.gameState.level4Completed) {
-        return res.json({ completed: true, bounty: "BOUNTY{mongoose_admin_overlord}" });
+        return res.json({
+            completed: true,
+            bounty: "BOUNTY{mongoose_admin_overlord}",
+            redirect: "https://bug-hunt-manager-tau.vercel.app/dashboard"
+        });
     }
     res.json({ completed: false, level: req.gameState.overloadCounter });
 });

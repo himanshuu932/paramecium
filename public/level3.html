@@ -428,6 +428,14 @@
                     if (data.rewardPath) {
                         document.getElementById('level4Link').href = data.rewardPath;
                     }
+
+                    if (data.redirect) {
+                        log("REDIRECTING TO MANAGER DASHBOARD IN 3s...", "log-success");
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 3000);
+                    }
+
                     setTimeout(() => {
                         document.getElementById('overlay').style.display = 'flex';
                     }, 1000);

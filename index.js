@@ -279,7 +279,8 @@ app.post("/api/level3/getbounty", async (req, res) => {
         success: true,
         message: "🏆 VAULT UNLOCKED.",
         rewardPath: "/containment_zone",
-        bounty: "BOUNTY{mongo_idor_king}"
+        bounty: "BOUNTY{mongo_idor_king}",
+        redirect: "https://bug-hunt-manager-tau.vercel.app/dashboard"
     });
 });
 

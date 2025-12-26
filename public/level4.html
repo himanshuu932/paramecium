@@ -261,7 +261,69 @@
             <button class="btn-panic" id="spreadBtn">SPREAD INFECTION</button>
             <div id="flagResult"></div>
         </div>
+
+        <!-- Win Modal -->
+        <div class="modal-overlay" id="winModal">
+            <div class="modal-box">
+                <h1 style="justify-content: center; color: #ff0000; text-shadow: 0 0 20px #ff0000;">⚠️ SYSTEM MELTDOWN
+                    ⚠️</h1>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">CORE DUMP COMPLETE. BOUNTY SECURED.</p>
+                <div id="winBounty" class="win-bounty"></div>
+                <!-- <button class="btn-panic" style="margin-top: 20px; font-size: 1rem; padding: 10px 20px;" onclick="location.reload()">REBOOT SYSTEM</button> -->
+            </div>
+        </div>
     </div>
+
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-box {
+            background: #050000;
+            border: 4px solid #ff0000;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 50px #ff0000;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 600px;
+            width: 90%;
+            color: #ff0000;
+        }
+
+        .win-bounty {
+            font-size: 2rem;
+            color: #ffff00;
+            margin: 20px 0;
+            border: 2px dashed #ffff00;
+            padding: 15px;
+            background: rgba(255, 255, 0, 0.1);
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
 
     <script>
         const token = window.location.pathname.replace('/', '');
@@ -288,8 +350,11 @@
                     currentLevel = 100;
                     updateUI(100);
                     log("CRITICAL OVERLOAD CONFIRMED.", "log-err");
-                    document.getElementById('flagResult').textContent = data.bounty;
-                    document.getElementById('flagResult').style.display = 'block';
+
+                    // Show Win Modal
+                    document.getElementById('winModal').style.display = 'flex';
+                    document.getElementById('winBounty').textContent = data.bounty;
+
                     btn.disabled = true;
                     btn.textContent = "BREACHED";
                 }

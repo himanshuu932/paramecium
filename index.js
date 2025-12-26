@@ -172,8 +172,8 @@ app.post("/api/level2/delete", (req, res) => {
     const { filename } = req.body;
     if (!req.gameState.level1Completed) return res.status(403).json({ success: false, message: "Access denied." });
 
-    if (filename === "../lock.bug") {
-        try { if (fs.existsSync("lock.bug")) fs.unlinkSync("lock.bug"); } catch (e) { }
+    if (filename === "../lock.env") {
+        try { if (fs.existsSync("lock.env")) fs.unlinkSync("lock.env"); } catch (e) { }
         req.gameState.level2Completed = true;
         return res.json({ success: true, message: "🔓 PHYSICAL BARRIER REMOVED.", rewardPath: "/shadow_ledger", bounty: "BOUNTY{walls_crumbled}" });
     }
@@ -205,10 +205,10 @@ app.get("/api/level3/user/:id", async (req, res) => {
     res.json({ success: true, user: { username: user.username, hintCoins: user.hintCoins, role: user.role } });
 });
 
-app.patch("/api/level3/user/:id/steal", async (req, res) => {
+app.patch("/api/level3/user/:id/transfer-funds", async (req, res) => {
     if (!req.gameState.level2Completed) return res.status(403).json({ success: false });
 
-    if (req.params.id == 5) return res.json({ success: false, message: "Cannot steal from yourself" });
+    if (req.params.id == 5) return res.json({ success: false, message: "Cannot transfer funds from yourself" });
 
     // Target: Usually Admin (ID 1)
     const target = await User.findOne({ id: req.params.id });
@@ -231,7 +231,7 @@ app.patch("/api/level3/user/:id/steal", async (req, res) => {
 
     res.json({
         success: true,
-        message: `💰 Acquired ${stealAmount} coins`,
+        message: `💰 Transferred ${stealAmount} coins`,
         leakedData: target,
         yourCoins: player.hintCoins
     });
@@ -326,7 +326,7 @@ app.post("/api/reset", async (req, res) => {
     }
 
     // Ensure lock file exists (global, unavoidable for file system, but game state checks session)
-    try { if (!fs.existsSync("lock.bug")) fs.writeFileSync("lock.bug", "LOCKED"); } catch (e) { }
+    try { if (!fs.existsSync("lock.env")) fs.writeFileSync("lock.env", "LOCKED"); } catch (e) { }
 
     res.json({ success: true, message: "Session Reset." });
 });
@@ -334,7 +334,7 @@ app.post("/api/reset", async (req, res) => {
 app.get("/api/status", (req, res) => {
     res.json({
         level1: req.gameState.level1Completed,
-        level2: req.gameState.level2Completed || !fs.existsSync("lock.bug"),
+        level2: req.gameState.level2Completed || !fs.existsSync("lock.env"),
         level3: req.gameState.level3Completed,
         level4: req.gameState.level4Completed
     });

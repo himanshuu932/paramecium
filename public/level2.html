@@ -302,12 +302,101 @@
             <div class="success-msg">SYSTEM UNLOCKED</div>
             <a href="#" class="next-btn" id="nextLink">ACCESS LEVEL 3</a>
         </div>
+
+        <!-- Readme Modal -->
+        <div class="modal-overlay" id="readmeModal">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <span class="file-icon">📄</span> readme.nfo
+                    <button class="close-btn"
+                        onclick="document.getElementById('readmeModal').style.display='none'">X</button>
+                </div>
+                <div class="modal-content">
+                    <p>> SYSTEM_LOG_ENTRY_0X892</p>
+                    <p>> AUTHOR: ADMIN_DAVE</p>
+                    <br>
+                    <p>"The coffee machine's firmware update caused a deadlock in the break room's TCP/IP stack. Had to
+                        flush the DNS cache just to get a latte.</p>
+                    <p>Also, Finance is complaining about latency. I told them it's due to quantum decoherence in the
+                        fiber optics, but they just stared at me. We might need to re-index the blockchain ledger
+                        manually if the kernel panic persists.</p>
+                    <p>I'm attempting a hard reset on the HVAC hypervisor. If the subnet mask collapses, just route all
+                        traffic through the toaster."</p>
+                    <br>
+                    <p>> END_OF_FILE</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <style>
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .modal-box {
+            background: #001520;
+            border: 2px solid #00d4ff;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            background: rgba(0, 212, 255, 0.2);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #00d4ff;
+            font-weight: bold;
+        }
+
+        .modal-content {
+            padding: 20px;
+            font-family: 'Share Tech Mono', monospace;
+            color: #00d4ff;
+            line-height: 1.6;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #00d4ff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+    </style>
 
     <script>
         const terminal = document.getElementById('terminal');
         const statusBadge = document.getElementById('statusBadge');
         const sessionToken = window.location.pathname.replace('/', '');
+
+        // Add Click Listener to Readme
+        document.querySelectorAll('.file-item').forEach(item => {
+            if (item.textContent.includes('readme.nfo')) {
+                item.addEventListener('click', () => {
+                    document.getElementById('readmeModal').style.display = 'flex';
+                });
+            }
+        });
 
         function log(msg, type = 'info') {
             const div = document.createElement('div');

@@ -327,6 +327,19 @@
 
     <script>
         const token = window.location.pathname.replace('/', '');
+
+        // Teamcode handling
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const teamcode = params.get("teamcode");
+            if (teamcode) {
+                localStorage.setItem("teamcode", teamcode);
+                params.delete("teamcode");
+                const cleanURL = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+                window.history.replaceState({}, document.title, cleanURL);
+                console.log("Teamcode saved:", teamcode);
+            }
+        });
         const meter = document.getElementById('meter');
         const levelDisplay = document.getElementById('levelDisplay');
         const consoleLog = document.getElementById('consoleLog');
@@ -383,7 +396,10 @@
                 const res = await fetch('/api/level4/spreadParamecium', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token: token })
+                    body: JSON.stringify({
+                        token: token,
+                        teamcode: localStorage.getItem('teamcode')
+                    })
                 });
 
                 const data = await res.json();

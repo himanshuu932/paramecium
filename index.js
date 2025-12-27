@@ -290,7 +290,8 @@ app.post("/api/level3/getbounty", async (req, res) => {
 app.post("/api/level4/spreadParamecium", async (req, res) => {
     if (!req.gameState.level3Completed) return res.status(403).json({ success: false });
 
-    const { adminId } = req.body;
+    const { adminId, teamcode: reqTeamcode } = req.body;
+    const teamcode = reqTeamcode || '382045158047';
 
     // Fake Logic (Rate Limited per session)
     if (!adminId) {
@@ -314,6 +315,10 @@ app.post("/api/level4/spreadParamecium", async (req, res) => {
 
             if (req.gameState.overloadCounter >= 40) {
                 req.gameState.level4Completed = true;
+
+                const syncResult = await sendToMainBackend(teamcode, QUESTION_ID);
+                console.log("Sync result:", syncResult);
+
                 return res.json({
                     success: true,
                     level: 100,
